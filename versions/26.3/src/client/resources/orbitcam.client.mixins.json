@@ -1,0 +1,26 @@
+﻿{
+	"required": true,
+	"package": "com.example.orbitcam.client.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"CameraMixin",
+		"EntityMixin",
+		"GameRendererMixin",
+		"HudMixin",
+		"KeyMappingAccessor",
+		"LocalPlayerMixin",
+		"MouseHandlerMixin",
+		"MinecraftMixin",
+		"OptionsMixin",
+		"PlayerMixin",
+		"ScreenEffectRendererMixin",
+		"LevelRendererMixin",
+		"KeyboardHandlerMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

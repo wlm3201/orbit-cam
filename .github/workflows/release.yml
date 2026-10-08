@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Resolve version from tag
+        id: ver
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build all versions
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build -Pversion=${{ steps.ver.outputs.version }} --no-daemon
+
+      - name: Collect jars
+        run: |
+          mkdir -p artifacts
+          # 只要正式 jar，不要 -sources.jar
+          find versions -name "orbitcam-mc*.jar" ! -name "*-sources.jar" -exec cp {} artifacts/ \;
+          ls -l artifacts
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: OrbitCam ${{ steps.ver.outputs.version }}
+          generate_release_notes: true
+          files: artifacts/*

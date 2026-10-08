@@ -1,0 +1,98 @@
+apply plugin: 'java'
+apply plugin: 'net.fabricmc.fabric-loom'
+apply plugin: 'maven-publish'
+
+version = rootProject.version
+
+base {
+	archivesName = "${rootProject.name}-mc${project.ext.minecraftVersion}"
+}
+
+loom {
+	splitEnvironmentSourceSets()
+
+	mods {
+		"orbitcam" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+}
+
+repositories {
+	maven {
+		name = 'Xander Maven'
+		url = 'https://maven.isxander.dev/releases'
+	}
+	maven {
+		name = 'TerraformersMC'
+		url = 'https://maven.terraformersmc.com/releases'
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.ext.minecraftVersion}"
+	implementation "net.fabricmc:fabric-loader:${rootProject.property('loader_version')}"
+
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.ext.fabricApiVersion}"
+
+	compileOnly "dev.isxander:yet-another-config-lib:${project.ext.yaclVersion}"
+	compileOnly "com.terraformersmc:modmenu:${project.ext.modmenuVersion}"
+	localRuntime "dev.isxander:yet-another-config-lib:${project.ext.yaclVersion}"
+	localRuntime "com.terraformersmc:modmenu:${project.ext.modmenuVersion}"
+}
+
+sourceSets {
+	main {
+		java.srcDirs = ["${rootDir}/src/main/java"]
+		resources.srcDirs = ["${rootDir}/src/main/resources"]
+	}
+	client {
+		java.srcDirs = ["${rootDir}/src/client/java", "${projectDir}/src/client/java"]
+		resources.srcDirs = ["${rootDir}/src/client/resources", "${projectDir}/src/client/resources"]
+	}
+}
+
+def projectVersion = project.version
+def minecraftDep = project.ext.minecraftDependency
+
+processResources {
+	inputs.property "version", projectVersion
+	inputs.property "minecraft_dependency", minecraftDep
+
+	filesMatching("fabric.mod.json") {
+		expand "version": projectVersion, "minecraft_dependency": minecraftDep
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 25
+	it.options.encoding = 'UTF-8'
+}
+
+java {
+	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
+}
+
+jar {
+	def projectName = rootProject.name
+	inputs.property "projectName", projectName
+
+	from("${rootDir}/LICENSE") {
+		rename { "${it}_$projectName"}
+	}
+}
+
+publishing {
+	publications {
+		create("mavenJava", MavenPublication) {
+			from components.java
+		}
+	}
+
+	repositories {
+	}
+}

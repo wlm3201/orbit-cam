@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "orbitcam",
+	"version": "${version}",
+	"name": "OrbitCam",
+	"description": "类似建模软件的环绕视角，相机脱离身体绕轴心旋转/平移/缩放，并释放鼠标以在屏幕中自由移动准星。",
+	"authors": [
+		"wlm3201"
+	],
+	"license": "CC0-1.0",
+	"icon": "assets/orbitcam/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"main": [
+			"com.example.orbitcam.OrbitCamMod"
+		],
+		"client": [
+			"com.example.orbitcam.client.OrbitCamClient"
+		],
+		"modmenu": [
+			"com.example.orbitcam.client.config.ModMenuIntegration"
+		]
+	},
+	"mixins": [
+		{
+			"config": "orbitcam.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"suggests": {
+		"yet-another-config-lib": "*",
+		"modmenu": "*"
+	},
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "${minecraft_dependency}",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
